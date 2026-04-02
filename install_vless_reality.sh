@@ -383,8 +383,8 @@ install_xray() {
     done
 
     while true; do
-        read -p "$(echo -e "请输入SNI域名 (默认: ${cyan}hk.art.museum${none}): ")" domain
-        [ -z "$domain" ] && domain="hk.art.museum"
+        read -p "$(echo -e "请输入SNI域名 (默认: ${cyan}iosapps.itunes.apple.com${none}): ")" domain
+        [ -z "$domain" ] && domain="iosapps.itunes.apple.com"
         if is_valid_domain "$domain"; then break; else error "域名格式无效，请重新输入。"; fi
     done
 
@@ -655,7 +655,8 @@ view_subscription_info() {
     fi
     local link_name_encoded=$(echo "$link_name" | sed 's/ /%20/g')
     
-    local vless_url="vless://${uuid}@${display_ip}:${target_port}?flow=xtls-rprx-vision&encryption=none&type=tcp&security=reality&sni=${domain}&fp=chrome&pbk=${public_key}&sid=${shortid}&spx=${spiderx_encoded}#${link_name_encoded}"
+    # 已移除 flow=xtls-rprx-vision& 参数
+    local vless_url="vless://${uuid}@${display_ip}:${target_port}?encryption=none&type=tcp&security=reality&sni=${domain}&fp=chrome&pbk=${public_key}&sid=${shortid}&spx=${spiderx_encoded}#${link_name_encoded}"
 
     # 5. 独立文件保存逻辑
     local save_file=~/xray_vless_reality_link_${target_port}.txt
@@ -671,7 +672,7 @@ view_subscription_info() {
         echo -e "${yellow} 地址: ${cyan}$ip${none}"
         echo -e "${yellow} 端口: ${cyan}$target_port${none}"
         echo -e "${yellow} UUID: ${cyan}$uuid${none}"
-        echo -e "${yellow} 流控: ${cyan}"xtls-rprx-vision"${none}"
+        echo -e "${yellow} 流控: ${cyan}无 (none)${none}"
         echo -e "${yellow} SNI: ${cyan}$domain${none}"
         echo -e "${yellow} SpiderX: ${cyan}$spiderx${none}"
         echo "----------------------------------------------------------------"
@@ -686,7 +687,7 @@ write_config() {
     local port=$1 uuid=$2 domain=$3 private_key=$4 public_key=$5 shortid="20220701" spiderx="/"
     local tag="vless-reality-in-$port"
 
-    # 构造单个 Inbound 的 JSON 对象
+    # 构造单个 Inbound 的 JSON 对象 (移除了 clients 数组中的 flow 属性)
     local inbound_json=$(jq -n \
         --argjson port "$port" \
         --arg uuid "$uuid" \
@@ -701,7 +702,7 @@ write_config() {
         "port": $port,
         "protocol": "vless",
         "settings": {
-            "clients": [{"id": $uuid, "flow": "xtls-rprx-vision"}],
+            "clients": [{"id": $uuid}],
             "decryption": "none"
         },
         "streamSettings": {
@@ -897,7 +898,7 @@ main() {
         done
         [[ -z "$port" ]] && port=443
         [[ -z "$uuid" ]] && uuid=$(cat /proc/sys/kernel/random/uuid)
-        [[ -z "$domain" ]] && domain="hk.art.museum"
+        [[ -z "$domain" ]] && domain="iosapps.itunes.apple.com"
         if ! is_valid_port "$port" || ! is_valid_domain "$domain"; then
             error "参数无效。请检查端口或SNI域名格式。" && exit 1
         fi
