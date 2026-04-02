@@ -23,7 +23,7 @@ curl -L https://raw.githubusercontent.com/RomanovCaesar/Install-Xray-Inbounds/ma
 
 vless vision reality:
 ```bash
-curl -L https://raw.githubusercontent.com/RomanovCaesar/Install-Xray-Inbounds/main/install_vless_reality.sh -o install_vless_reality.sh && chmod +x install_vless_reality.sh && sudo ./install_vless_reality.sh
+curl -L https://raw.githubusercontent.com/xiananrain/Install-Xray-Inbounds/main/install_vless_reality.sh -o install_vless_reality.sh && chmod +x install_vless_reality.sh && sudo ./install_vless_reality.sh
 ```
 
 xray routing:
